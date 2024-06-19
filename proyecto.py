@@ -56,9 +56,9 @@ if uploaded_file is not None:
     if save_uploaded_file(uploaded_file):
         st.success("Imagen subida exitosamente!")
         
-        # Redimensionar la imagen a 5x5 píxeles
+        # Redimensionar la imagen a 10x10 píxeles
         image = Image.open(uploaded_file)
-        resized_image = image.resize((1, 1))
+        resized_image = image.resize((10, 10))
 
         # Mostrar la imagen redimensionada
         st.image(resized_image, caption="Imagen subida")
