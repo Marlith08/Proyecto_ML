@@ -1,20 +1,47 @@
 import streamlit as st
-import requests
-from streamlit_lottie import st_lottie
 from PIL import Image
+import os
 
-#Función de animación
-def load_lottieurl(url):
-    r = requests.get(url)
-    if r.status_code !=200:
-        return None
-    return r.json()
+# Crear una función para guardar la imagen subida
+def save_uploaded_file(uploaded_file):
+    try:
+        with open(os.path.join("uploads", uploaded_file.name), "wb") as f:
+            f.write(uploaded_file.getbuffer())
+        return True
+    except Exception as e:
+        return False
 
-lottie_coding = load_lottieurl("https://www.google.com/imgres?imgurl=https%3A%2F%2Fimg.freepik.com%2Fvector-premium%2Fpersonaje-dibujos-animados-codigo-barras-buscando-lupa-diseno-lindo_152558-13042.jpg&tbnid=ccR2z0Yn0m2SQM&vet=12ahUKEwjC4paX6-aGAxUZFGIAHTC9C5cQMygBegQIARBI..i&imgrefurl=https%3A%2F%2Fwww.freepik.es%2Fvector-premium%2Fpersonaje-dibujos-animados-codigo-barras-buscando-lupa-diseno-lindo_18499499.htm&docid=QSZoiCNT8Sj61M&w=626&h=626&q=imagen%20animada%20codigo&ved=2ahUKEwjC4paX6-aGAxUZFGIAHTC9C5cQMygBegQIARBI")
-imagen_video =Image.opem("https://www.google.com/imgres?imgurl=https%3A%2F%2Fimg.freepik.com%2Ffotos-premium%2Fcodigos-binarios-movimiento-datos-digitales-abstractos-que-fluyen-traves-redes-ia-generativa_634358-1738.jpg&tbnid=Vx1Kmh1lRjxH3M&vet=12ahUKEwiM2ZPu6-aGAxWhFGIAHdSbD4gQMygPegQIARBr..i&imgrefurl=https%3A%2F%2Fwww.freepik.es%2Ffotos-premium%2Fcodigos-binarios-movimiento-datos-digitales-abstractos-que-fluyen-traves-redes-ia-generativa_41332183.htm&docid=OG5c9VFoFGMgkM&w=626&h=351&itg=1&q=imagen%20con%20movimiento%20de%20codigos&ved=2ahUKEwiM2ZPu6-aGAxWhFGIAHdSbD4gQMygPegQIARBr")
+# Crear una función para eliminar la imagen subida
+def delete_uploaded_file(file_path):
+    try:
+        if os.path.exists(file_path):
+            os.remove(file_path)
+        return True
+    except Exception as e:
+        return False
 
+st.title("Aplicación de subida y eliminación de imágenes")
 
+# Crear un cuadro para que el usuario pueda subir una imagen
+uploaded_file = st.file_uploader("Elige una imagen", type=["png", "jpg", "jpeg"])
 
+if uploaded_file is not None:
+    if save_uploaded_file(uploaded_file):
+        st.success("Imagen subida exitosamente!")
+        st.image(uploaded_file, caption="Imagen subida")
+
+        if st.button("Eliminar imagen"):
+            file_path = os.path.join("uploads", uploaded_file.name)
+            if delete_uploaded_file(file_path):
+                st.success("Imagen eliminada exitosamente!")
+            else:
+                st.error("Error al eliminar la imagen.")
+    else:
+        st.error("Error al subir la imagen.")
+
+# Crear un directorio 'uploads' si no existe
+if not os.path.exists("uploads"):
+    os.makedirs("uploads")
 
 
 
