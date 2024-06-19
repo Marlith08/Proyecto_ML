@@ -58,7 +58,7 @@ if uploaded_file is not None:
         
         # Redimensionar la imagen a 5x5 píxeles
         image = Image.open(uploaded_file)
-        resized_image = image.resize((10, 10))
+        resized_image = image.resize((1, 1))
 
         # Mostrar la imagen redimensionada
         st.image(resized_image, caption="Imagen subida")
