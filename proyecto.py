@@ -17,8 +17,7 @@ model = load_model()
 
 # Función para procesar la imagen y hacer la predicción
 def predict(image):
-    # Preprocesar la imagen para que tenga el formato correcto
-    image = image.resize((224, 224))  # Ajusta el tamaño según tu modelo
+    image = image.resize((224, 224))  # Ajusta el tamaño de la imagen
     image = np.array(image) / 255.0
     image = np.expand_dims(image, axis=0)
     
@@ -26,7 +25,6 @@ def predict(image):
     predictions = model.predict(image)
     return predictions
 
-# Interfaz de usuario con Streamlit
 st.title("Clasificación de Imágenes con Machine Learning")
 st.write("Sube una imagen para obtener una predicción")
 
