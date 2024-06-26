@@ -3,7 +3,7 @@ from PIL import Image
 import tensorflow as tf
 import numpy as np
 
-model = tf.keras.models.load_model('indicar la ruta del modelo')
+model = tf.keras.models.load_model('ruta/a/tu/modelo.h5')
 
 # Función para procesar la imagen y hacer la predicción
 def predict(image):
