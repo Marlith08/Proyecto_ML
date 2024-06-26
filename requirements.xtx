@@ -1,6 +1,4 @@
 streamlit
-pandas
-matplotlib
-Pillow
-tensorflow 
-
+tensorflow
+pillow
+gdown
