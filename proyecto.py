@@ -8,7 +8,7 @@ import gdown
 @st.cache_resource
 def load_model():
     url = 'https://drive.google.com/uc?id=1pHQW0c7nauYcO1748kBNyX1nwcmFFx8l'  # Enlace de descarga directa
-    output = 'Xception_diabetic_retinopathy_colab_v2.h5'
+    output = 'Xception_diabetic_retinopathy_colab_v2.h5'  # Nombre correcto del archivo
     gdown.download(url, output, quiet=False)
     model = tf.keras.models.load_model(output)
     return model
