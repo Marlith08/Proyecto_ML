@@ -6,14 +6,14 @@ import gdown
 
 # Descargar el modelo de Google Drive
 @st.cache_resource
-def load_model():
+def load_modelo():
     url = 'https://drive.google.com/uc?id=1pHQW0c7nauYcO1748kBNyX1nwcmFFx8l'  # Enlace de descarga directa
     output = 'Xception_diabetic_retinopathy_colab_v2.h5'  # Nombre correcto del archivo
     gdown.download(url, output, quiet=False)
     model = tf.keras.models.load_model(output)
     return model
 
-model = load_model()
+model = load_modelo()
 
 # Función para procesar la imagen y hacer la predicción
 def predict(image):
