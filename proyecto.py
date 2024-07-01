@@ -12,7 +12,7 @@ uploaded_file = st.file_uploader("Elige una imagen...", type=["jpg", "jpeg", "pn
 # Verificación de carga de archivo
 if uploaded_file is not None:
     # Ruta completa al modelo
-    modelo_path = 'https://github.com/Marlith08/Proyecto_ML/blob/main/.gitattributes'
+    modelo_path = '"C:\\Users\\anton\\Downloads\\ls\\Xception_diabetic_retinopathy_colab_v2.h5"'
 
     # Cargar el modelo
     modelo = load_model(modelo_path)
