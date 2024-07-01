@@ -1,9 +1,13 @@
 import streamlit as st
-from keras.models import load_model
+from keras.models import Model
+from keras.layers import GlobalAveragePooling2D, Dense, Dropout
+from keras.applications import Xception
 from keras.preprocessing import image
+from keras.engine import saving
 import numpy as np
 import urllib.request
 import os
+import h5py
 
 # Función para descargar el modelo
 @st.experimental_memo
@@ -32,22 +36,39 @@ uploaded_file = st.file_uploader("Elige una imagen...", type=["jpg", "jpeg", "pn
 # Verificación de carga de archivo
 if uploaded_file is not None:
     try:
-        # Cargar el modelo
-        modelo = load_model(model_filename)
+        # Definir el modelo base preentrenado
+        target_size = (229, 229)
+        base_model = Xception(weights='imagenet', include_top=False, input_shape=target_size + (3,))
+        x = base_model.output
+        x = GlobalAveragePooling2D()(x)
+        x = Dense(1024, activation='relu')(x)
+        x = Dropout(0.5)(x)
+        predictions = Dense(1, activation='sigmoid')(x)
+        model = Model(inputs=base_model.input, outputs=predictions)
 
-        # Mostrar la imagen subida
-        st.image(uploaded_file, caption='Imagen de entrada', use_column_width=True)
+        # Cargar los pesos del modelo desde el archivo h5
+        try:
+            with h5py.File(model_filename, 'r') as f:
+                saving.load_weights_from_hdf5_group(f['model_weights'], model.layers)
+            st.success("Modelo cargado correctamente.")
+        except (UnicodeDecodeError, ValueError, OSError) as e:
+            st.error(f"Error al cargar los pesos del modelo: {e}")
+            model = None
 
-        # Preprocesamiento de la imagen para hacer la predicción
-        img = image.load_img(uploaded_file, target_size=(224, 224))  # Ajusta según las dimensiones de entrada de tu modelo
-        img_array = image.img_to_array(img)
-        img_array = np.expand_dims(img_array, axis=0)
-        img_array /= 255.
+        if model:
+            # Mostrar la imagen subida
+            st.image(uploaded_file, caption='Imagen de entrada', use_column_width=True)
 
-        # Realizar la predicción
-        prediction = modelo.predict(img_array)
+            # Preprocesamiento de la imagen para hacer la predicción
+            img = image.load_img(uploaded_file, target_size=target_size)
+            img_array = image.img_to_array(img)
+            img_array = np.expand_dims(img_array, axis=0)
+            img_array /= 255.
 
-        # Mostrar resultados
-        st.write(f'Predicción: {prediction}')
+            # Realizar la predicción
+            prediction = model.predict(img_array)
+
+            # Mostrar resultados
+            st.write(f'Predicción: {prediction}')
     except Exception as e:
         st.error(f'Error cargando el modelo o realizando la predicción: {e}')
