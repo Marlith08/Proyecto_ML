@@ -1,43 +1,33 @@
+# Importa las bibliotecas necesarias
 import streamlit as st
-from PIL import Image
-import tensorflow as tf
+from keras.models import load_model
+from keras.preprocessing import image
 import numpy as np
-import gdown
 
-# Descargar el modelo de Google Drive
-@st.cache_resource
-def load_modelo():
-    url = 'https://drive.google.com/uc?id=1pHQW0c7nauYcO1748kBNyX1nwcmFFx8l'  # Enlace de descarga directa
-    output = 'Xception_diabetic_retinopathy_colab_v2.h5'  # Nombre correcto del archivo
-    gdown.download(url, output, quiet=False)
-    model = tf.keras.models.load_model(output)
-    return model
+# Título de la aplicación
+st.title('Predicción de Imágenes con Modelo de Deep Learning')
 
-model = load_modelo()
-
-# Función para procesar la imagen y hacer la predicción
-def predict(image):
-    # Preprocesar la imagen para que tenga el formato correcto
-    image = image.resize((224, 224))  # Ajusta el tamaño según tu modelo
-    image = np.array(image) / 255.0
-    image = np.expand_dims(image, axis=0)
-
-    # Hacer la predicción
-    predictions = model.predict(image)
-    return predictions
-
-# Interfaz de usuario con Streamlit
-st.title("Clasificación de Imágenes con Machine Learning")
-st.write("Sube una imagen para obtener una predicción")
-
-# Subir imagen
+# Subir una imagen de entrada
 uploaded_file = st.file_uploader("Elige una imagen...", type=["jpg", "jpeg", "png"])
 
+# Verificación de carga de archivo
 if uploaded_file is not None:
-    image = Image.open(uploaded_file)
-    st.image(image, caption='Imagen subida.', use_column_width=True)
-    st.write("")
-    st.write("Clasificando...")
+    # Cargar el modelo entrenado
+    modelo_path = 'modelo_path = 'C:/Users/anton/Proyecto_ML/Xception_diabetic_retinopathy_colab_v2.h5'
+    modelo = load_model(modelo_path)
 
-    predictions = predict(image)
-    st.write("Predicción:", predictions)
+    # Mostrar la imagen subida
+    st.image(uploaded_file, caption='Imagen de entrada', use_column_width=True)
+
+    # Preprocesamiento de la imagen para hacer la predicción
+    img = image.load_img(uploaded_file, target_size=(img_width, img_height))  # Ajusta img_width e img_height según tu modelo
+    img_array = image.img_to_array(img)
+    img_array = np.expand_dims(img_array, axis=0)  # Añade una dimensión para batch
+    img_array /= 255.  # Normaliza los valores de píxeles
+
+    # Realizar la predicción
+    prediction = modelo.predict(img_array)
+    # Aquí puedes manejar la salida de la predicción según tu modelo específico
+
+    # Mostrar resultados
+    st.write(f'Predicción: {prediction}')
