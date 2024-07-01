@@ -1,4 +1,3 @@
-# Importa las bibliotecas necesarias
 import streamlit as st
 from keras.models import load_model
 from keras.preprocessing import image
@@ -12,22 +11,29 @@ uploaded_file = st.file_uploader("Elige una imagen...", type=["jpg", "jpeg", "pn
 
 # Verificación de carga de archivo
 if uploaded_file is not None:
-    # Cargar el modelo entrenado
-    modelo_path = 'C:/Users/anton/Xception_diabetic_retinopathy_colab_v2.h5'
-    modelo = load_model(modelo_path)
+    # Ruta completa al modelo
+    modelo_path = 'C:/Users/anton/Proyecto_ML/Xception_diabetic_retinopathy_colab_v2.h5'
 
-    # Mostrar la imagen subida
-    st.image(uploaded_file, caption='Imagen de entrada', use_column_width=True)
+    try:
+        # Cargar el modelo
+        modelo = load_model(modelo_path)
 
-    # Preprocesamiento de la imagen para hacer la predicción
-    img = image.load_img(uploaded_file, target_size=(img_width, img_height))  # Ajusta img_width e img_height según tu modelo
-    img_array = image.img_to_array(img)
-    img_array = np.expand_dims(img_array, axis=0)  # Añade una dimensión para batch
-    img_array /= 255.  # Normaliza los valores de píxeles
+        # Mostrar la imagen subida
+        st.image(uploaded_file, caption='Imagen de entrada', use_column_width=True)
 
-    # Realizar la predicción
-    prediction = modelo.predict(img_array)
-    # Aquí puedes manejar la salida de la predicción según tu modelo específico
+        # Preprocesamiento de la imagen para hacer la predicción
+        img = image.load_img(uploaded_file, target_size=(224, 224))  # Ajusta según las dimensiones de entrada de tu modelo
+        img_array = image.img_to_array(img)
+        img_array = np.expand_dims(img_array, axis=0)
+        img_array /= 255.
 
-    # Mostrar resultados
-    st.write(f'Predicción: {prediction}')
+        # Realizar la predicción
+        prediction = modelo.predict(img_array)
+
+        # Mostrar resultados
+        st.write(f'Predicción: {prediction}')
+
+    except FileNotFoundError:
+        st.error(f'Error: No se pudo encontrar el archivo del modelo en {modelo_path}. Verifica la ruta.')
+    except Exception as e:
+        st.error(f'Error inesperado: {str(e)}')
