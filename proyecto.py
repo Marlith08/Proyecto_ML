@@ -16,8 +16,12 @@ model_filename = 'Xception_diabetic_retinopathy_colab_v2.h5'
 
 if not os.path.exists(model_filename):
     with st.spinner('Descargando el modelo...'):
-        download_model(model_url, model_filename)
-        st.success('Modelo descargado con éxito!')
+        try:
+            download_model(model_url, model_filename)
+            st.success('Modelo descargado con éxito!')
+        except Exception as e:
+            st.error(f'Error descargando el modelo: {e}')
+            st.stop()
 
 # Título de la aplicación
 st.title('Predicción de Imágenes con Modelo de Deep Learning')
@@ -27,20 +31,23 @@ uploaded_file = st.file_uploader("Elige una imagen...", type=["jpg", "jpeg", "pn
 
 # Verificación de carga de archivo
 if uploaded_file is not None:
-    # Cargar el modelo
-    modelo = load_model(model_filename)
+    try:
+        # Cargar el modelo
+        modelo = load_model(model_filename)
 
-    # Mostrar la imagen subida
-    st.image(uploaded_file, caption='Imagen de entrada', use_column_width=True)
+        # Mostrar la imagen subida
+        st.image(uploaded_file, caption='Imagen de entrada', use_column_width=True)
 
-    # Preprocesamiento de la imagen para hacer la predicción
-    img = image.load_img(uploaded_file, target_size=(224, 224))  # Ajusta según las dimensiones de entrada de tu modelo
-    img_array = image.img_to_array(img)
-    img_array = np.expand_dims(img_array, axis=0)
-    img_array /= 255.
+        # Preprocesamiento de la imagen para hacer la predicción
+        img = image.load_img(uploaded_file, target_size=(224, 224))  # Ajusta según las dimensiones de entrada de tu modelo
+        img_array = image.img_to_array(img)
+        img_array = np.expand_dims(img_array, axis=0)
+        img_array /= 255.
 
-    # Realizar la predicción
-    prediction = modelo.predict(img_array)
+        # Realizar la predicción
+        prediction = modelo.predict(img_array)
 
-    # Mostrar resultados
-    st.write(f'Predicción: {prediction}')
+        # Mostrar resultados
+        st.write(f'Predicción: {prediction}')
+    except Exception as e:
+        st.error(f'Error cargando el modelo o realizando la predicción: {e}')
